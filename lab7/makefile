@@ -1,4 +1,4 @@
-CFLAGS=-c -pedantic-errors -Wall 
+CFLAGS=-c -O -O2 -O3 -Ofast
 COMP=gcc
 AFLAGS=-felf64
 ASM=nasm
@@ -10,23 +10,19 @@ lab7: main.o
 	gcc -o lab7 main.o sepiaFilter.o sepia.o bmpImage.o mmfile.o
 
 main.o: sepiaFilter.o main.c
-	gcc -c main.c -o main.o
-
-
+	gcc $(CFLAGS) main.c -o main.o
 
 sepiaFilter.o: sepia.o bmpImage.o sepiaFilter.c
-	gcc -c sepiaFilter.c -o sepiaFilter.o
+	gcc $(CFLAGS) sepiaFilter.c -o sepiaFilter.o
 
 sepia.o: sepia.asm
 	nasm -felf64 sepia.asm -o sepia.o
 
-
-
 bmpImage.o: mmfile.o bmpImage.c
-	gcc -c bmpImage.c -o bmpImage.o
+	gcc $(CFLAGS) bmpImage.c -o bmpImage.o
 
 mmfile.o: mmfile.c
-	gcc -c mmfile.c -o mmfile.o
+	gcc $(CFLAGS) mmfile.c -o mmfile.o
 
 clean:
-	rm -f main.o sepiaFilter.o sepia.o bmpImage.o mmfile.o
+	rm -f main.o sepiaFilter.o sepia.o bmpImage.o mmfile.o sepiaOne.o

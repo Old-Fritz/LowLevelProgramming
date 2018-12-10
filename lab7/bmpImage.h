@@ -1,6 +1,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#ifndef BMPIMAGE
+#define BMPIMAGE
+
 struct Pixel
 {
 	uint8_t b,g,r;
@@ -56,3 +59,5 @@ enum FileError writeHeader(FILE* file, uint32_t width, uint32_t height);
 
 
 enum FileError rotate(const char* sourceFilename, const char* destFilename);
+
+#endif

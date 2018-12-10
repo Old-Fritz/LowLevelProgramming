@@ -2,21 +2,21 @@
 
 void setSepiaRegisters(float[static 4], float [static 4], float[static 4]);
 void setRGBRegistersAndCalc(float[static 4], float [static 4], float[static 4], float[static 4]);
+void sepiaOne( struct Pixel* const, struct Pixel* const);
 
 static unsigned char sat( uint64_t x) {
     if (x < 256) return x; return 255;
 }
 
-static void sepiaOne( struct Pixel* const sourcePixel, struct Pixel* const destPixel ) 
+void sepiaOne( struct Pixel* const sourcePixel, struct Pixel* const destPixel ) 
 {
     static const float c[3][3] =  {
     { .393f, .769f, .189f },
     { .349f, .686f, .168f },
     { .272f, .543f, .131f } };
-	struct Pixel const old = *sourcePixel;
-	destPixel->r = sat(old.r * c[0][0] + old.g * c[0][1] + old.b * c[0][2]);
-	destPixel->g = sat(old.r * c[1][0] + old.g * c[1][1] + old.b * c[1][2]);
-	destPixel->b = sat(old.r * c[2][0] + old.g * c[2][1] + old.b * c[2][2]);
+	destPixel->r = sat(sourcePixel->r * c[0][0] + sourcePixel->g * c[0][1] + sourcePixel->b * c[0][2]);
+	destPixel->g = sat(sourcePixel->r * c[1][0] + sourcePixel->g * c[1][1] + sourcePixel->b * c[1][2]);
+	destPixel->b = sat(sourcePixel->r * c[2][0] + sourcePixel->g * c[2][1] + sourcePixel->b * c[2][2]);
 }
   
 
@@ -33,18 +33,20 @@ static void calcPack(float rgbData[3][12], int ind, float* out)
 
 static void calculateChank(struct Pixel** pixelChankSource, struct Pixel** pixelChankDest)
 {
-	float pixels[3][4];
+	float pixels[3][12];
 	float result[12];
 	int i, j;
+	struct Pixel old;
 
 
 	for(i = 0;i<4;i++)
 	{
+		old = *pixelChankSource[i];
 		for(j = 0;j<3;j++)
 		{
-			pixels[0][i*3+j] = pixelChankSource[i]->r;
-			pixels[1][i*3+j] = pixelChankSource[i]->g;
-			pixels[2][i*3+j] = pixelChankSource[i]->b;
+			pixels[0][i*3+j] = old.r;
+			pixels[1][i*3+j] = old.g;
+			pixels[2][i*3+j] = old.b;
 		}
 	}
 	
@@ -54,9 +56,10 @@ static void calculateChank(struct Pixel** pixelChankSource, struct Pixel** pixel
 	
 	for(i = 0;i<4;i++)
 	{
-		pixelChankDest[i]->r = sat(result[i*3]);
-		pixelChankDest[i]->g = sat(result[i*3+1]);
-		pixelChankDest[i]->b = sat(result[i*3+2]);
+		old.r = sat(result[i*3]);
+		old.g = sat(result[i*3+1]);
+		old.b = sat(result[i*3+2]);
+		*pixelChankDest[i] = old;
 	}
 
 	

@@ -3,7 +3,7 @@
 #include <sys/resource.h>
 #include <unistd.h>
 
-#define REPEAT_TIMES 100
+#define REPEAT_TIMES 20
 
 int main()
 {
@@ -37,24 +37,7 @@ int main()
     end = r.ru_utime;
 
 
-    for(i = 0;i<REPEAT_TIMES;i++)
-    {
-	   	getrusage(RUSAGE_SELF, &r );
-	    start = r.ru_utime;
-
-	    sepiaFilterC(source, destC);
-
-	    getrusage(RUSAGE_SELF, &r );
-	    end = r.ru_utime;
-
-	    sumTime+=((end.tv_sec - start.tv_sec) * 1000000L) +
-        end.tv_usec - start.tv_usec;
-    }
-
-    printf( "Avg C sepia in microseconds: %ld\n", sumTime/REPEAT_TIMES );
-
-	sumTime = 0;
-    for(i = 0;i<REPEAT_TIMES;i++)
+	for(i = 0;i<REPEAT_TIMES;i++)
     {
     	getrusage(RUSAGE_SELF, &r );
 	    start = r.ru_utime;
@@ -69,6 +52,25 @@ int main()
     }
 
     printf( "Avg SSE sepia in microseconds: %ld\n", sumTime/REPEAT_TIMES );
+
+
+	sumTime = 0;
+
+	for(i = 0;i<REPEAT_TIMES;i++)
+    {
+	   	getrusage(RUSAGE_SELF, &r );
+	    start = r.ru_utime;
+
+	    sepiaFilterC(source, destC);
+
+	    getrusage(RUSAGE_SELF, &r );
+	    end = r.ru_utime;
+
+	    sumTime+=((end.tv_sec - start.tv_sec) * 1000000L) +
+        end.tv_usec - start.tv_usec;
+    }
+    printf( "Avg C sepia in microseconds: %ld\n", sumTime/REPEAT_TIMES );
+    
 
 
     return 0;
