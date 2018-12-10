@@ -19,6 +19,7 @@ void* _malloc(size_t query)
 	struct Mem* mem = memStart;
 	struct Mem* next;
 	void* ptr;
+	void* startAdress;
 
 	if(query<BLOCK_MIN_SIZE)
 		query = BLOCK_MIN_SIZE;
@@ -40,7 +41,11 @@ void* _malloc(size_t query)
 	}
 
 	//if nothing has returned
-	ptr = getMemory((uint8_t*)mem+sizeof(struct Mem), query+sizeof(struct Mem));
+	if(mem)
+		startAdress = (uint8_t*)mem+sizeof(struct Mem);
+	else
+		startAdress = HEAP_START;
+	ptr = getMemory(startAdress, query+sizeof(struct Mem));
 	if(!ptr)
 		return ptr;
 
@@ -57,7 +62,7 @@ void _free(void* ptr)
 {
 	struct Mem* mem = (struct Mem*)((uint8_t*)ptr-sizeof(struct Mem));
 	mem->isFree = true;
-	while(mem->next && mem->next->isFree==true)
+	while(mem->next && mem->next->isFree==true && (uint8_t*)mem->next==(uint8_t*)mem+sizeof(struct Mem)+mem->capacity)
 	{
 		mem->capacity += mem->next->capacity + sizeof(struct Mem);
 		mem->next = mem->next->next;
